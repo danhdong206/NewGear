@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.newgear.android">
 
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,7 +19,10 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".activity.MainActivity"></activity>
+        <activity android:name=".activity.LoginScreenActivity"></activity>
+        <activity
+            android:name=".activity.PasswordScreenActivity"
+            android:parentActivityName=".activity.LoginScreenActivity"></activity>
     </application>
 
 </manifest>
