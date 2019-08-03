@@ -1,10 +1,10 @@
-package com.newgear.android.object;
+package com.newgear.android.model;
 
 import com.google.gson.annotations.SerializedName;
 
 public class Response {
     @SerializedName("status")
-    private int status;
+    protected int status;
 
     public Response(int status) {
         this.status = status;

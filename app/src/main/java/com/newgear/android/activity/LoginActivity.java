@@ -9,7 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.newgear.android.R;
 import com.newgear.android.fragment.LoginScreenFragment;
 
-public class LoginScreenActivity extends AppCompatActivity implements LoginScreenFragment.OnFragmentInteractionListener {
+public class LoginActivity extends AppCompatActivity implements LoginScreenFragment.OnFragmentInteractionListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

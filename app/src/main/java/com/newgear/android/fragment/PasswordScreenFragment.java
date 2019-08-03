@@ -5,16 +5,15 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,8 +23,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.newgear.android.R;
-import com.newgear.android.activity.LoginScreenActivity;
-import com.newgear.android.object.Response;
+import com.newgear.android.activity.MainActivity;
+import com.newgear.android.activity.PasswordScreenActivity;
+import com.newgear.android.model.Location;
+import com.newgear.android.model.Response;
+import com.newgear.android.model.User;
 import com.newgear.android.retrofit.JsonPlaceHolderApi;
 import com.newgear.android.retrofit.RetrofitClientInstance;
 import com.newgear.android.utils.Constants;
@@ -100,6 +102,7 @@ public class PasswordScreenFragment extends Fragment {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.getSupportActionBar().setTitle("VERIFICATION");
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //Change back arrow
         final Drawable backArrow = getResources().getDrawable(R.drawable.chevron_left);
         backArrow.setColorFilter(getResources().getColor(R.color.color_background), PorterDuff.Mode.SRC_ATOP);
         activity.getSupportActionBar().setHomeAsUpIndicator(backArrow);
@@ -144,6 +147,7 @@ public class PasswordScreenFragment extends Fragment {
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("Loading...");
         progressDialog.show();
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         /*Create handle for the RetrofitInstance interface*/
         JsonPlaceHolderApi service = RetrofitClientInstance.getRetrofitInstance().create(JsonPlaceHolderApi.class);
         Call<Response> call = service.getLogin(phoneNumber, password);
@@ -151,22 +155,16 @@ public class PasswordScreenFragment extends Fragment {
             @Override
             public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
                 progressDialog.dismiss();
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
                 if (response.isSuccessful()) {
-                    builder.setTitle("Notification");
-                    builder.setMessage("You login successfully");
-                    builder.setCancelable(false);
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-                    });
-                    AlertDialog alertDialog = builder.create();
-                    alertDialog.show();
+                    Intent intent = new Intent(getContext(), MainActivity.class);
+                    //Save phone number and switch to MainActivity
+                    Bundle bundle = new Bundle();
+                    bundle.putString(Constants.PASSWORD_EXTRA, mEditTextPassword.getText().toString());
+                    intent.putExtras(bundle);
+                    startActivity(intent);
                 } else {
-                    builder.setTitle("Error !!!");
+                    builder.setTitle("Error!");
                     builder.setMessage("Wrong password, please try again");
                     builder.setCancelable(false);
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -182,8 +180,9 @@ public class PasswordScreenFragment extends Fragment {
 
             @Override
             public void onFailure(Call<Response> call, Throwable t) {
+                t.printStackTrace();
                 progressDialog.dismiss();
-                Toast.makeText(getContext(), "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "No Internet Connection. Please try again.", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -196,7 +195,7 @@ public class PasswordScreenFragment extends Fragment {
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 if (mEditTextPassword.length() <= 5 && mEditTextPassword.length() >= 1) {
-                    builder.setTitle("Error !!!");
+                    builder.setTitle("Error!");
                     builder.setMessage("Password must at least 6 characters");
                     builder.setCancelable(false);
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -208,7 +207,7 @@ public class PasswordScreenFragment extends Fragment {
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
                 } else if (mEditTextPassword.length() == 0) {
-                    builder.setTitle("Error !!!");
+                    builder.setTitle("Error!");
                     builder.setMessage("Please enter your password");
                     builder.setCancelable(false);
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {

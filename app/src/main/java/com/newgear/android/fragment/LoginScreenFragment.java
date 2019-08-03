@@ -221,7 +221,7 @@ public class LoginScreenFragment extends Fragment {
                     intent.putExtras(bundle);
                     startActivity(intent);
                 } else {
-                    builder.setTitle("Error !!!");
+                    builder.setTitle("Error!");
                     builder.setMessage("Phone number not exist");
                     builder.setCancelable(false);
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -238,7 +238,7 @@ public class LoginScreenFragment extends Fragment {
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 progressDialog.dismiss();
-                Toast.makeText(getContext(), "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "No Internet Connection. Please try again.", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -251,7 +251,7 @@ public class LoginScreenFragment extends Fragment {
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 if (mEditTextPhoneNumber.length() <= 5) {
-                    builder.setTitle("Error !!!");
+                    builder.setTitle("Error!");
                     builder.setMessage("Please try again");
                     builder.setCancelable(false);
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -263,7 +263,7 @@ public class LoginScreenFragment extends Fragment {
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
                 } else if (mEditTextPhoneNumber.length() == 0) {
-                    builder.setTitle("Error !!!");
+                    builder.setTitle("Error!");
                     builder.setMessage("Please enter your phone number");
                     builder.setCancelable(false);
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
