@@ -7,18 +7,22 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.newgear.android.R;
-import com.newgear.android.fragment.SplashFragment;
+import com.newgear.android.fragment.PasswordFragment;
+import com.newgear.android.utils.Constants;
 
-public class SplashScreenActivity extends AppCompatActivity implements SplashFragment.OnFragmentInteractionListener {
+public class PasswordScreenActivity extends AppCompatActivity implements PasswordFragment.OnFragmentInteractionListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
+        setContentView(R.layout.activity_password);
 
-        SplashFragment splashFragment = new SplashFragment();
+        //Get bundle from LoginScreenFragment and switch to PasswordScreenFragment
+        String phoneNumber = getIntent().getStringExtra(Constants.PHONE_NUMBER_EXTRA);
+        PasswordFragment passwordFragment = PasswordFragment.newInstance(phoneNumber);
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.splash_screen_fragment, splashFragment);
+        fragmentTransaction.add(R.id.password_screen_fragment, passwordFragment);
         fragmentTransaction.commit();
     }
 

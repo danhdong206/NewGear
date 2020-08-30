@@ -9,25 +9,23 @@ import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.newgear.android.R;
-import com.newgear.android.activity.MainActivity;
+import com.newgear.android.activity.LoginActivity;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link SplashScreenFragment.OnFragmentInteractionListener} interface
+ * {@link SplashFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link SplashScreenFragment#newInstance} factory method to
+ * Use the {@link SplashFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SplashScreenFragment extends Fragment {
+public class SplashFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -38,17 +36,17 @@ public class SplashScreenFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public SplashScreenFragment() {
+    public SplashFragment() {
         // Required empty public constructor
     }
 
-    public static SplashScreenFragment newInstance(int someInt, String someTitle) {
-        SplashScreenFragment splashScreenFragment = new SplashScreenFragment();
+    public static SplashFragment newInstance(int someInt, String someTitle) {
+        SplashFragment splashFragment = new SplashFragment();
         Bundle args = new Bundle();
         args.putInt("someInt", someInt);
         args.putString("someTitle", someTitle);
-        splashScreenFragment.setArguments(args);
-        return splashScreenFragment;
+        splashFragment.setArguments(args);
+        return splashFragment;
     }
 
     @Override
@@ -60,7 +58,7 @@ public class SplashScreenFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_splash_screen, container, false);
+        return inflater.inflate(R.layout.fragment_splash, container, false);
     }
 
     public void onButtonPressed(Uri uri) {
@@ -75,6 +73,7 @@ public class SplashScreenFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        //Fullscreen
         getActivity().getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LOW_PROFILE
                         | View.SYSTEM_UI_FLAG_FULLSCREEN
@@ -83,12 +82,15 @@ public class SplashScreenFragment extends Fragment {
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
+        //Action Bar
+        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+
         /* New Handler to start the Menu-Activity
          * and close this Splash-Screen after some seconds.*/
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent mainIntent = new Intent(getContext(), MainActivity.class);
+                Intent mainIntent = new Intent(getContext(), LoginActivity.class);
                 startActivity(mainIntent);
                 getActivity().finish();
             }
