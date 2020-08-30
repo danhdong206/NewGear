@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -24,13 +23,13 @@ import android.widget.Toast;
 
 import com.newgear.android.R;
 import com.newgear.android.activity.MainActivity;
-import com.newgear.android.activity.PasswordScreenActivity;
-import com.newgear.android.model.Location;
 import com.newgear.android.model.Response;
-import com.newgear.android.model.User;
+import com.newgear.android.presenter.ILoginPresenter;
+import com.newgear.android.presenter.LoginPresenter;
 import com.newgear.android.retrofit.JsonPlaceHolderApi;
 import com.newgear.android.retrofit.RetrofitClientInstance;
 import com.newgear.android.utils.Constants;
+import com.newgear.android.view.ILoginViewPassword;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -38,12 +37,12 @@ import retrofit2.Callback;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link PasswordScreenFragment.OnFragmentInteractionListener} interface
+ * {@link PasswordFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link PasswordScreenFragment#newInstance} factory method to
+ * Use the {@link PasswordFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PasswordScreenFragment extends Fragment {
+public class PasswordFragment extends Fragment implements ILoginViewPassword {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -56,20 +55,22 @@ public class PasswordScreenFragment extends Fragment {
     ProgressDialog progressDialog;
     String mPhoneNumber;
 
+    ILoginPresenter mLoginPresenter;
+
     // TODO: Rename and change types of parameters
 
     private OnFragmentInteractionListener mListener;
 
-    public PasswordScreenFragment() {
+    public PasswordFragment() {
         // Required empty public constructor
     }
 
-    public static PasswordScreenFragment newInstance(String phoneNumber) {
-        PasswordScreenFragment passwordScreenFragment = new PasswordScreenFragment();
+    public static PasswordFragment newInstance(String phoneNumber) {
+        PasswordFragment passwordFragment = new PasswordFragment();
         Bundle args = new Bundle();
         args.putString(Constants.PHONE_NUMBER_EXTRA, phoneNumber);
-        passwordScreenFragment.setArguments(args);
-        return passwordScreenFragment;
+        passwordFragment.setArguments(args);
+        return passwordFragment;
     }
 
     @Override
@@ -81,7 +82,7 @@ public class PasswordScreenFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_password_screen, container, false);
+        return inflater.inflate(R.layout.fragment_password, container, false);
     }
 
     public void onButtonPressed(Uri uri) {
@@ -96,7 +97,9 @@ public class PasswordScreenFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //Receive phone number from PasswordScreenActivity
+        mLoginPresenter = new LoginPresenter(this);
+
+        //Receive phone number from PasswordActivity
         mPhoneNumber = getArguments().getString(Constants.PHONE_NUMBER_EXTRA);
         //Action Bar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -154,7 +157,6 @@ public class PasswordScreenFragment extends Fragment {
         call.enqueue(new Callback<Response>() {
             @Override
             public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-                progressDialog.dismiss();
 
                 if (response.isSuccessful()) {
                     Intent intent = new Intent(getContext(), MainActivity.class);
@@ -163,6 +165,7 @@ public class PasswordScreenFragment extends Fragment {
                     bundle.putString(Constants.PASSWORD_EXTRA, mEditTextPassword.getText().toString());
                     intent.putExtras(bundle);
                     startActivity(intent);
+                    progressDialog.dismiss();
                 } else {
                     builder.setTitle("Error!");
                     builder.setMessage("Wrong password, please try again");
@@ -170,7 +173,7 @@ public class PasswordScreenFragment extends Fragment {
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-
+                            progressDialog.dismiss();
                         }
                     });
                     AlertDialog alertDialog = builder.create();
@@ -193,36 +196,31 @@ public class PasswordScreenFragment extends Fragment {
         mButtonSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                if (mEditTextPassword.length() <= 5 && mEditTextPassword.length() >= 1) {
-                    builder.setTitle("Error!");
-                    builder.setMessage("Password must at least 6 characters");
-                    builder.setCancelable(false);
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-                    });
-                    AlertDialog alertDialog = builder.create();
-                    alertDialog.show();
-                } else if (mEditTextPassword.length() == 0) {
-                    builder.setTitle("Error!");
-                    builder.setMessage("Please enter your password");
-                    builder.setCancelable(false);
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-                    });
-                    AlertDialog alertDialog = builder.create();
-                    alertDialog.show();
-                } else {
+                if (mEditTextPassword.length() >= 6 && mEditTextPassword.length() <= 127) {
                     getPhoneNumberAndPasswordFromServer(mPhoneNumber, mEditTextPassword.getText().toString());
+                } else {
+                    mLoginPresenter.onLoginPassword(mEditTextPassword.getText().toString());
                 }
             }
         });
+
+    }
+
+    @Override
+    public void onLoginPasswordError(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setTitle("Error!");
+        builder.setMessage(message);
+        builder.setCancelable(false);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 
 }

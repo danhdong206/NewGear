@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -33,6 +32,9 @@ import android.widget.Toast;
 
 import com.newgear.android.R;
 import com.newgear.android.activity.PasswordScreenActivity;
+import com.newgear.android.presenter.ILoginPresenter;
+import com.newgear.android.presenter.LoginPresenter;
+import com.newgear.android.view.ILoginViewPhoneNumber;
 import com.newgear.android.retrofit.JsonPlaceHolderApi;
 import com.newgear.android.retrofit.RetrofitClientInstance;
 import com.newgear.android.utils.Constants;
@@ -43,12 +45,12 @@ import retrofit2.Callback;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link LoginScreenFragment.OnFragmentInteractionListener} interface
+ * {@link LoginFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link LoginScreenFragment#newInstance} factory method to
+ * Use the {@link LoginFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LoginScreenFragment extends Fragment {
+public class LoginFragment extends Fragment implements ILoginViewPhoneNumber {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -59,23 +61,25 @@ public class LoginScreenFragment extends Fragment {
     TextView mCodeCountry;
     Button mButtonTypePassword;
 
+    ILoginPresenter mLoginPresenter;
+
     ProgressDialog progressDialog;
 
     // TODO: Rename and change types of parameters
 
     private OnFragmentInteractionListener mListener;
 
-    public LoginScreenFragment() {
+    public LoginFragment() {
         // Required empty public constructor
     }
 
-    public static LoginScreenFragment newInstance(int someInt, String someTitle) {
-        LoginScreenFragment loginScreenFragment = new LoginScreenFragment();
+    public static LoginFragment newInstance(int someInt, String someTitle) {
+        LoginFragment loginFragment = new LoginFragment();
         Bundle args = new Bundle();
         args.putInt("someInt", someInt);
         args.putString("someTitle", someTitle);
-        loginScreenFragment.setArguments(args);
-        return loginScreenFragment;
+        loginFragment.setArguments(args);
+        return loginFragment;
     }
 
     @Override
@@ -87,7 +91,7 @@ public class LoginScreenFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_login_screen, container, false);
+        return inflater.inflate(R.layout.fragment_login, container, false);
     }
 
     public void onButtonPressed(Uri uri) {
@@ -96,13 +100,14 @@ public class LoginScreenFragment extends Fragment {
         }
     }
 
-
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+
+        mLoginPresenter = new LoginPresenter(this);
 
         //Spinner items country
         spinnerCountry();
@@ -212,7 +217,6 @@ public class LoginScreenFragment extends Fragment {
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, retrofit2.Response<Void> response) {
-                progressDialog.dismiss();
                 if (response.isSuccessful()) {
                     Intent intent = new Intent(getContext(), PasswordScreenActivity.class);
                     //Save phone number and switch to PasswordActivity
@@ -220,6 +224,7 @@ public class LoginScreenFragment extends Fragment {
                     bundle.putString(Constants.PHONE_NUMBER_EXTRA, mCodeCountry.getText().toString() + mEditTextPhoneNumber.getText().toString());
                     intent.putExtras(bundle);
                     startActivity(intent);
+                    progressDialog.dismiss();
                 } else {
                     builder.setTitle("Error!");
                     builder.setMessage("Phone number not exist");
@@ -227,7 +232,7 @@ public class LoginScreenFragment extends Fragment {
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-
+                            progressDialog.dismiss();
                         }
                     });
                     AlertDialog alertDialog = builder.create();
@@ -249,36 +254,32 @@ public class LoginScreenFragment extends Fragment {
         mButtonTypePassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                if (mEditTextPhoneNumber.length() <= 5) {
-                    builder.setTitle("Error!");
-                    builder.setMessage("Please try again");
-                    builder.setCancelable(false);
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-                    });
-                    AlertDialog alertDialog = builder.create();
-                    alertDialog.show();
-                } else if (mEditTextPhoneNumber.length() == 0) {
-                    builder.setTitle("Error!");
-                    builder.setMessage("Please enter your phone number");
-                    builder.setCancelable(false);
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                        }
-                    });
-                    AlertDialog alertDialog = builder.create();
-                    alertDialog.show();
-                } else if (mEditTextPhoneNumber.length() >= 6 && mEditTextPhoneNumber.length() <= 12) {
+                if (mEditTextPhoneNumber.length() >= 6 && mEditTextPhoneNumber.length() <= 12) {
                     getPhoneNumberFromServer(mCodeCountry.getText().toString() + mEditTextPhoneNumber.getText().toString());
+                } else {
+                    mLoginPresenter.onLoginPhoneNumber(mEditTextPhoneNumber.getText().toString());
                 }
             }
         });
+
+    }
+
+    @Override
+    public void onLoginPhoneNumberError(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        builder.setTitle("Error!");
+        builder.setMessage(message);
+        builder.setCancelable(false);
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
     }
 
 }

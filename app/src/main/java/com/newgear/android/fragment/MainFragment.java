@@ -21,12 +21,6 @@ import android.view.ViewGroup;
 
 import com.newgear.android.R;
 import com.newgear.android.adapter.ViewPagerMainAdapter;
-import com.newgear.android.model.User;
-import com.newgear.android.model.timeline.DriverInfo;
-import com.newgear.android.model.timeline.Feed;
-import com.newgear.android.model.timeline.NewTaskGroup;
-import com.newgear.android.model.timeline.PartnerRating;
-import com.newgear.android.model.timeline.TasksMini;
 import com.newgear.android.utils.Constants;
 
 /**

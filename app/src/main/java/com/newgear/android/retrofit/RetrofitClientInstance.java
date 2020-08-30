@@ -2,13 +2,12 @@ package com.newgear.android.retrofit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.newgear.android.model.User;
+import com.newgear.android.model.user.User;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import java.io.IOException;
 import java.util.List;
 
-import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -19,7 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClientInstance {
     private static Retrofit retrofit;
-    private static final String BASE_URL = "http://gear-staging.scs71.com/";
+    private static final String BASE_URL = "https://gear-staging.symcresol.com/";
 
     public static Retrofit getRetrofitInstance() {
         if (retrofit == null) {

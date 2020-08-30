@@ -13,20 +13,11 @@ import android.widget.Toast;
 
 import com.newgear.android.R;
 import com.newgear.android.adapter.StaggeredGridViewTimeLineAdapter;
-import com.newgear.android.model.User;
-import com.newgear.android.model.timeline.DriverInfo;
 import com.newgear.android.model.timeline.Feed;
-import com.newgear.android.model.timeline.NewTaskGroup;
-import com.newgear.android.model.timeline.PartnerRating;
-import com.newgear.android.model.timeline.TasksMini;
 import com.newgear.android.retrofit.JsonPlaceHolderApi;
 import com.newgear.android.retrofit.RetrofitClientInstance;
-import com.raizlabs.android.dbflow.sql.language.Select;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Nullable;
 

@@ -7,18 +7,18 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.newgear.android.R;
-import com.newgear.android.fragment.SplashScreenFragment;
+import com.newgear.android.fragment.SplashFragment;
 
-public class SplashScreenActivity extends AppCompatActivity implements SplashScreenFragment.OnFragmentInteractionListener {
+public class SplashScreenActivity extends AppCompatActivity implements SplashFragment.OnFragmentInteractionListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash_screen);
+        setContentView(R.layout.activity_splash);
 
-        SplashScreenFragment splashScreenFragment = new SplashScreenFragment();
+        SplashFragment splashFragment = new SplashFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.splash_screen_fragment, splashScreenFragment);
+        fragmentTransaction.add(R.id.splash_screen_fragment, splashFragment);
         fragmentTransaction.commit();
     }
 

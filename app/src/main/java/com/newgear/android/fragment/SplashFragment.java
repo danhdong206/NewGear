@@ -20,12 +20,12 @@ import com.newgear.android.activity.LoginActivity;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link SplashScreenFragment.OnFragmentInteractionListener} interface
+ * {@link SplashFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link SplashScreenFragment#newInstance} factory method to
+ * Use the {@link SplashFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SplashScreenFragment extends Fragment {
+public class SplashFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -36,17 +36,17 @@ public class SplashScreenFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public SplashScreenFragment() {
+    public SplashFragment() {
         // Required empty public constructor
     }
 
-    public static SplashScreenFragment newInstance(int someInt, String someTitle) {
-        SplashScreenFragment splashScreenFragment = new SplashScreenFragment();
+    public static SplashFragment newInstance(int someInt, String someTitle) {
+        SplashFragment splashFragment = new SplashFragment();
         Bundle args = new Bundle();
         args.putInt("someInt", someInt);
         args.putString("someTitle", someTitle);
-        splashScreenFragment.setArguments(args);
-        return splashScreenFragment;
+        splashFragment.setArguments(args);
+        return splashFragment;
     }
 
     @Override
@@ -58,7 +58,7 @@ public class SplashScreenFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_splash_screen, container, false);
+        return inflater.inflate(R.layout.fragment_splash, container, false);
     }
 
     public void onButtonPressed(Uri uri) {

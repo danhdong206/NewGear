@@ -7,18 +7,18 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.newgear.android.R;
-import com.newgear.android.fragment.LoginScreenFragment;
+import com.newgear.android.fragment.LoginFragment;
 
-public class LoginActivity extends AppCompatActivity implements LoginScreenFragment.OnFragmentInteractionListener {
+public class LoginActivity extends AppCompatActivity implements LoginFragment.OnFragmentInteractionListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login_screen);
+        setContentView(R.layout.activity_login);
 
-        LoginScreenFragment loginScreenFragment = new LoginScreenFragment();
+        LoginFragment loginFragment = new LoginFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.login_screen_fragment, loginScreenFragment);
+        fragmentTransaction.add(R.id.login_screen_fragment, loginFragment);
         fragmentTransaction.commit();
     }
 

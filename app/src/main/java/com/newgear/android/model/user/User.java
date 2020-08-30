@@ -1,5 +1,8 @@
-package com.newgear.android.model;
+package com.newgear.android.model.user;
 
+
+import android.text.TextUtils;
+import android.util.Patterns;
 
 import com.newgear.android.MyDatabase;
 import com.raizlabs.android.dbflow.annotation.Column;
@@ -8,7 +11,7 @@ import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
 @Table(database = MyDatabase.class, name = "User")
-public class User extends BaseModel {
+public class User extends BaseModel implements IUser {
     @PrimaryKey
     @Column
     private int id;
@@ -43,6 +46,8 @@ public class User extends BaseModel {
     @Column
     private int totalPoint;
 
+    private String password;
+
     public User() {
 
     }
@@ -64,6 +69,10 @@ public class User extends BaseModel {
         this.qualification = qualification;
         this.workingInfo = workingInfo;
         this.totalPoint = totalPoint;
+    }
+
+    public User(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public int getId() {
@@ -192,5 +201,17 @@ public class User extends BaseModel {
 
     public void setTotalPoint(int totalPoint) {
         this.totalPoint = totalPoint;
+    }
+
+    @Override
+    public int isValidData() {
+        if (TextUtils.isEmpty(getPhoneNumber()))
+            return 0;
+        else if (getPhoneNumber().length() < 6)
+            return 1;
+        else if (getPhoneNumber().length() > 12)
+            return 2;
+        else
+            return -1;
     }
 }

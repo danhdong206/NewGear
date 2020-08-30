@@ -8,7 +8,6 @@ import android.os.Bundle;
 
 import com.newgear.android.R;
 import com.newgear.android.fragment.MainFragment;
-import com.newgear.android.fragment.SplashScreenFragment;
 import com.newgear.android.utils.Constants;
 
 public class MainActivity extends AppCompatActivity implements MainFragment.OnFragmentInteractionListener {
