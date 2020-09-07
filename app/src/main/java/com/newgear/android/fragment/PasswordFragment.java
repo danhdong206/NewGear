@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,10 @@ import com.newgear.android.retrofit.RetrofitClientInstance;
 import com.newgear.android.utils.Constants;
 import com.newgear.android.view.ILoginViewPassword;
 
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -47,6 +52,11 @@ public class PasswordFragment extends Fragment implements ILoginViewPassword {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+
+    private static final String TAG = LoginFragment.class.getSimpleName();
+
+
+    private Disposable disposable;
 
     EditText mEditTextPhoneNumber;
     EditText mEditTextPassword;
@@ -150,44 +160,89 @@ public class PasswordFragment extends Fragment implements ILoginViewPassword {
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("Loading...");
         progressDialog.show();
+
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         /*Create handle for the RetrofitInstance interface*/
         JsonPlaceHolderApi service = RetrofitClientInstance.getRetrofitInstance().create(JsonPlaceHolderApi.class);
-        Call<Response> call = service.getLogin(phoneNumber, password);
-        call.enqueue(new Callback<Response>() {
-            @Override
-            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
 
-                if (response.isSuccessful()) {
-                    Intent intent = new Intent(getContext(), MainActivity.class);
-                    //Save phone number and switch to MainActivity
-                    Bundle bundle = new Bundle();
-                    bundle.putString(Constants.PASSWORD_EXTRA, mEditTextPassword.getText().toString());
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-                    progressDialog.dismiss();
-                } else {
-                    builder.setTitle("Error!");
-                    builder.setMessage("Wrong password, please try again");
-                    builder.setCancelable(false);
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            progressDialog.dismiss();
-                        }
-                    });
-                    AlertDialog alertDialog = builder.create();
-                    alertDialog.show();
-                }
-            }
+        service.getLogin(phoneNumber, password)
+                .toObservable()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Response>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        Log.d(TAG, "onSubscribe");
+                        disposable = d;
+                    }
 
-            @Override
-            public void onFailure(Call<Response> call, Throwable t) {
-                t.printStackTrace();
-                progressDialog.dismiss();
-                Toast.makeText(getContext(), "No Internet Connection. Please try again.", Toast.LENGTH_LONG).show();
-            }
-        });
+                    @Override
+                    public void onNext(Response response) {
+                        Log.d(TAG, "Name: " + response);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        builder.setTitle("Error!");
+                        builder.setMessage("Wrong password, please try again");
+                        builder.setCancelable(false);
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                progressDialog.dismiss();
+                            }
+                        });
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.show();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Intent intent = new Intent(getContext(), MainActivity.class);
+                        //Save phone number and switch to MainActivity
+                        Bundle bundle = new Bundle();
+                        bundle.putString(Constants.PASSWORD_EXTRA, mEditTextPassword.getText().toString());
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+                        progressDialog.dismiss();
+                    }
+                });
+
+//        Call<Response> call = service.getLogin(phoneNumber, password);
+//        call.enqueue(new Callback<Response>() {
+//            @Override
+//            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
+//
+//                if (response.isSuccessful()) {
+//                    Intent intent = new Intent(getContext(), MainActivity.class);
+//                    //Save phone number and switch to MainActivity
+//                    Bundle bundle = new Bundle();
+//                    bundle.putString(Constants.PASSWORD_EXTRA, mEditTextPassword.getText().toString());
+//                    intent.putExtras(bundle);
+//                    startActivity(intent);
+//                    progressDialog.dismiss();
+//                } else {
+//                    builder.setTitle("Error!");
+//                    builder.setMessage("Wrong password, please try again");
+//                    builder.setCancelable(false);
+//                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            progressDialog.dismiss();
+//                        }
+//                    });
+//                    AlertDialog alertDialog = builder.create();
+//                    alertDialog.show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<Response> call, Throwable t) {
+//                t.printStackTrace();
+//                progressDialog.dismiss();
+//                Toast.makeText(getContext(), "No Internet Connection. Please try again.", Toast.LENGTH_LONG).show();
+//            }
+//        });
     }
 
     private void loginWithPhoneNumberAndPassword() {
@@ -221,6 +276,12 @@ public class PasswordFragment extends Fragment implements ILoginViewPassword {
         });
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        disposable.dispose();
     }
 
 }

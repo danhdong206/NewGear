@@ -1,5 +1,6 @@
 package com.newgear.android.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -7,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,6 +21,7 @@ import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +42,12 @@ import com.newgear.android.retrofit.JsonPlaceHolderApi;
 import com.newgear.android.retrofit.RetrofitClientInstance;
 import com.newgear.android.utils.Constants;
 
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 
@@ -56,6 +65,8 @@ public class LoginFragment extends Fragment implements ILoginViewPhoneNumber {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    private static final String TAG = LoginFragment.class.getSimpleName();
+
     TextView mTextViewTermsOfUse;
     EditText mEditTextPhoneNumber;
     TextView mCodeCountry;
@@ -64,6 +75,8 @@ public class LoginFragment extends Fragment implements ILoginViewPhoneNumber {
     ILoginPresenter mLoginPresenter;
 
     ProgressDialog progressDialog;
+
+    private Disposable disposable;
 
     // TODO: Rename and change types of parameters
 
@@ -210,42 +223,87 @@ public class LoginFragment extends Fragment implements ILoginViewPhoneNumber {
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("Loading...");
         progressDialog.show();
-        /*Create handle for the RetrofitInstance interface*/
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        JsonPlaceHolderApi service = RetrofitClientInstance.getRetrofitInstance().create(JsonPlaceHolderApi.class);
-        Call call = service.getPhoneNumber(phoneNumber);
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, retrofit2.Response<Void> response) {
-                if (response.isSuccessful()) {
-                    Intent intent = new Intent(getContext(), PasswordScreenActivity.class);
-                    //Save phone number and switch to PasswordActivity
-                    Bundle bundle = new Bundle();
-                    bundle.putString(Constants.PHONE_NUMBER_EXTRA, mCodeCountry.getText().toString() + mEditTextPhoneNumber.getText().toString());
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-                    progressDialog.dismiss();
-                } else {
-                    builder.setTitle("Error!");
-                    builder.setMessage("Phone number not exist");
-                    builder.setCancelable(false);
-                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            progressDialog.dismiss();
-                        }
-                    });
-                    AlertDialog alertDialog = builder.create();
-                    alertDialog.show();
-                }
-            }
 
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(getContext(), "No Internet Connection. Please try again.", Toast.LENGTH_LONG).show();
-            }
-        });
+        /*Create handle for the RetrofitInstance interface*/
+        JsonPlaceHolderApi service = RetrofitClientInstance.getRetrofitInstance().create(JsonPlaceHolderApi.class);
+
+        service.getPhoneNumber(phoneNumber)
+                .toObservable()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Void>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        Log.d(TAG, "onSubscribe");
+                        disposable = d;
+                    }
+
+                    @Override
+                    public void onNext(Void aVoid) {
+                        Log.d(TAG, "Name: " + aVoid);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("Error!");
+                        builder.setMessage("Phone number not exist");
+                        builder.setCancelable(false);
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                progressDialog.dismiss();
+                            }
+                        });
+                        AlertDialog alertDialog = builder.create();
+                        alertDialog.show();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Intent intent = new Intent(getContext(), PasswordScreenActivity.class);
+                        //Save phone number and switch to PasswordActivity
+                        Bundle bundle = new Bundle();
+                        bundle.putString(Constants.PHONE_NUMBER_EXTRA, mCodeCountry.getText().toString() + mEditTextPhoneNumber.getText().toString());
+                        intent.putExtras(bundle);
+                        startActivity(intent);
+                        progressDialog.dismiss();
+                    }
+                });
+
+//        Call call = service.getPhoneNumber(phoneNumber);
+//        call.enqueue(new Callback<Void>() {
+//            @Override
+//            public void onResponse(Call<Void> call, retrofit2.Response<Void> response) {
+//                if (response.isSuccessful()) {
+//                    Intent intent = new Intent(getContext(), PasswordScreenActivity.class);
+//                    //Save phone number and switch to PasswordActivity
+//                    Bundle bundle = new Bundle();
+//                    bundle.putString(Constants.PHONE_NUMBER_EXTRA, mCodeCountry.getText().toString() + mEditTextPhoneNumber.getText().toString());
+//                    intent.putExtras(bundle);
+//                    startActivity(intent);
+//                    progressDialog.dismiss();
+//                } else {
+//                    builder.setTitle("Error!");
+//                    builder.setMessage("Phone number not exist");
+//                    builder.setCancelable(false);
+//                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            progressDialog.dismiss();
+//                        }
+//                    });
+//                    AlertDialog alertDialog = builder.create();
+//                    alertDialog.show();
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<Void> call, Throwable t) {
+//                progressDialog.dismiss();
+//                Toast.makeText(getContext(), "No Internet Connection. Please try again.", Toast.LENGTH_LONG).show();
+//            }
+//        });
     }
 
     private void loginWithPhoneNumber() {
@@ -279,7 +337,11 @@ public class LoginFragment extends Fragment implements ILoginViewPhoneNumber {
         });
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
-
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        disposable.dispose();
+    }
 }

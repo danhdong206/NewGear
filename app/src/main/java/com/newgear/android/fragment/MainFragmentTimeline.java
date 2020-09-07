@@ -133,7 +133,7 @@ public class MainFragmentTimeline extends Fragment {
 //        user.setTotalPoint(0);
 //        user.save();
 
-        staggeredGridView();
+//        staggeredGridView();
     }
 
 //    private void addDataListStaggered(){
@@ -179,34 +179,34 @@ public class MainFragmentTimeline extends Fragment {
 //
 //    }
 
-    private void staggeredGridView() {
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage("Loading...");
-        progressDialog.show();
-
-        /*Create handle for the RetrofitInstance interface*/
-        JsonPlaceHolderApi service = RetrofitClientInstance.getRetrofitInstance().create(JsonPlaceHolderApi.class);
-        Call<Feed> call = service.getFeeds();
-        call.enqueue(new Callback<Feed>() {
-            @Override
-            public void onResponse(Call<Feed> call, Response<Feed> response) {
-                progressDialog.dismiss();
-                generateDataListStaggered(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<Feed> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(getContext(), "No Internet Connection. Please try again.", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void generateDataListStaggered(Feed feed) {
-        RecyclerView recyclerView = getActivity().findViewById(R.id.recyclerview_items_timeline);
-        staggeredGridViewTimeLineAdapter = new StaggeredGridViewTimeLineAdapter(getContext(), feed.getUpdatedAtTimeSeconds());
-        StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(NUM_COLUMNS, LinearLayoutManager.VERTICAL);
-        recyclerView.setLayoutManager(staggeredGridLayoutManager);
-        recyclerView.setAdapter(staggeredGridViewTimeLineAdapter);
-    }
+//    private void staggeredGridView() {
+//        progressDialog = new ProgressDialog(getActivity());
+//        progressDialog.setMessage("Loading...");
+//        progressDialog.show();
+//
+//        /*Create handle for the RetrofitInstance interface*/
+//        JsonPlaceHolderApi service = RetrofitClientInstance.getRetrofitInstance().create(JsonPlaceHolderApi.class);
+//        Call<Feed> call = service.getFeeds();
+//        call.enqueue(new Callback<Feed>() {
+//            @Override
+//            public void onResponse(Call<Feed> call, Response<Feed> response) {
+//                progressDialog.dismiss();
+//                generateDataListStaggered(response.body());
+//            }
+//
+//            @Override
+//            public void onFailure(Call<Feed> call, Throwable t) {
+//                progressDialog.dismiss();
+//                Toast.makeText(getContext(), "No Internet Connection. Please try again.", Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
+//
+//    private void generateDataListStaggered(Feed feed) {
+//        RecyclerView recyclerView = getActivity().findViewById(R.id.recyclerview_items_timeline);
+//        staggeredGridViewTimeLineAdapter = new StaggeredGridViewTimeLineAdapter(getContext(), feed.getUpdatedAtTimeSeconds());
+//        StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(NUM_COLUMNS, LinearLayoutManager.VERTICAL);
+//        recyclerView.setLayoutManager(staggeredGridLayoutManager);
+//        recyclerView.setAdapter(staggeredGridViewTimeLineAdapter);
+//    }
 }
