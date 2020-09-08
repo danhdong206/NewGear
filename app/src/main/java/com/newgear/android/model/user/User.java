@@ -10,6 +10,8 @@ import com.raizlabs.android.dbflow.annotation.PrimaryKey;
 import com.raizlabs.android.dbflow.annotation.Table;
 import com.raizlabs.android.dbflow.structure.BaseModel;
 
+import javax.inject.Inject;
+
 @Table(database = MyDatabase.class, name = "User")
 public class User extends BaseModel implements IUser {
     @PrimaryKey

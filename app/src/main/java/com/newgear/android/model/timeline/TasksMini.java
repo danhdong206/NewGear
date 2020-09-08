@@ -10,6 +10,8 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 @Table(database = MyDatabase.class, name = "TasksMini")
 public class TasksMini extends BaseModel {
     @PrimaryKey
@@ -43,8 +45,10 @@ public class TasksMini extends BaseModel {
     @Column
     @SerializedName("task_status")
     private String taskStatus;
+
     @SerializedName("partner_rating")
     private List<PartnerRating> partnerRatings;
+
     @SerializedName("driver_info")
     private List<DriverInfo> driverInfos;
 
@@ -63,6 +67,12 @@ public class TasksMini extends BaseModel {
         this.location = location;
         this.isHandler = isHandler;
         this.taskStatus = taskStatus;
+        this.partnerRatings = partnerRatings;
+        this.driverInfos = driverInfos;
+    }
+
+    @Inject
+    public TasksMini(List<PartnerRating> partnerRatings, List<DriverInfo> driverInfos) {
         this.partnerRatings = partnerRatings;
         this.driverInfos = driverInfos;
     }

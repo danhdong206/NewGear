@@ -10,6 +10,8 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 @Table(database = MyDatabase.class, name = "NewTaskGroup")
 public class NewTaskGroup extends BaseModel {
     @PrimaryKey
@@ -69,6 +71,11 @@ public class NewTaskGroup extends BaseModel {
         this.cancelledCargosNumber = cancelledCargosNumber;
         this.isDelivered = isDelivered;
         this.transportationCompanyName = transportationCompanyName;
+        this.tasksMinis = tasksMinis;
+    }
+
+    @Inject
+    public NewTaskGroup(List<TasksMini> tasksMinis) {
         this.tasksMinis = tasksMinis;
     }
 

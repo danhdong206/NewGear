@@ -2,6 +2,8 @@ package com.newgear.android.model.user;
 
 import android.text.TextUtils;
 
+import javax.inject.Inject;
+
 public class UserPassword implements IUserPassword {
 
     private String password;

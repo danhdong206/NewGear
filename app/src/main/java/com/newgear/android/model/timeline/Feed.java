@@ -10,6 +10,8 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 @Table(database = MyDatabase.class, name = "Feed")
 public class Feed extends BaseModel {
     @PrimaryKey
@@ -45,6 +47,11 @@ public class Feed extends BaseModel {
         this.createdAtTimeSeconds = createdAtTimeSeconds;
         this.updatedAtTimeSeconds = updatedAtTimeSeconds;
         this.confirmedAtTimeSeconds = confirmedAtTimeSeconds;
+        this.newTaskGroups = newTaskGroups;
+    }
+
+    @Inject
+    public Feed(List<NewTaskGroup> newTaskGroups) {
         this.newTaskGroups = newTaskGroups;
     }
 
