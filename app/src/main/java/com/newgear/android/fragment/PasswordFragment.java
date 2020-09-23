@@ -20,59 +20,48 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.newgear.android.R;
 import com.newgear.android.activity.MainActivity;
+import com.newgear.android.di.component.ApplicationComponent;
+import com.newgear.android.di.component.MyApplication;
+import com.newgear.android.di.component.password.DaggerPasswordFragmentComponent;
+import com.newgear.android.di.component.password.PasswordFragmentComponent;
+import com.newgear.android.di.module.password.PasswordFragmentMVPModule;
 import com.newgear.android.model.Response;
-import com.newgear.android.presenter.ILoginPresenter;
-import com.newgear.android.presenter.LoginPresenter;
-import com.newgear.android.retrofit.JsonPlaceHolderApi;
-import com.newgear.android.retrofit.RetrofitClientInstance;
+import com.newgear.android.mvp.password.PasswordViewPresenter;
+import com.newgear.android.mvp.password.PresenterPasswordImpl;
+import com.newgear.android.retrofit.APIInterface;
 import com.newgear.android.utils.Constants;
-import com.newgear.android.view.ILoginViewPassword;
+
+import javax.inject.Inject;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link PasswordFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link PasswordFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class PasswordFragment extends Fragment implements ILoginViewPassword {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private static final String TAG = LoginFragment.class.getSimpleName();
 
 
-    private Disposable disposable;
+public class PasswordFragment extends Fragment implements PasswordViewPresenter.View {
 
-    EditText mEditTextPhoneNumber;
+    private static final String TAG = PasswordFragment.class.getSimpleName();
+
     EditText mEditTextPassword;
     Button mButtonSend;
 
     ProgressDialog progressDialog;
     String mPhoneNumber;
 
-    ILoginPresenter mLoginPresenter;
+    PasswordFragmentComponent passwordFragmentComponent;
 
-    // TODO: Rename and change types of parameters
+    @Inject
+    PresenterPasswordImpl presenter;
+
 
     private OnFragmentInteractionListener mListener;
 
     public PasswordFragment() {
-        // Required empty public constructor
+
     }
 
     public static PasswordFragment newInstance(String phoneNumber) {
@@ -89,9 +78,7 @@ public class PasswordFragment extends Fragment implements ILoginViewPassword {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_password, container, false);
     }
 
@@ -107,18 +94,26 @@ public class PasswordFragment extends Fragment implements ILoginViewPassword {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mLoginPresenter = new LoginPresenter(this);
-
         //Receive phone number from PasswordActivity
         mPhoneNumber = getArguments().getString(Constants.PHONE_NUMBER_EXTRA);
+
         //Action Bar
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.getSupportActionBar().setTitle("VERIFICATION");
         activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         //Change back arrow
         final Drawable backArrow = getResources().getDrawable(R.drawable.chevron_left);
         backArrow.setColorFilter(getResources().getColor(R.color.color_background), PorterDuff.Mode.SRC_ATOP);
         activity.getSupportActionBar().setHomeAsUpIndicator(backArrow);
+
+        ApplicationComponent applicationComponent = MyApplication.get(this).getApplicationComponent();
+        passwordFragmentComponent = DaggerPasswordFragmentComponent.builder()
+                .passwordFragmentMVPModule(new PasswordFragmentMVPModule(this))
+                .applicationComponent(applicationComponent)
+                .build();
+
+        passwordFragmentComponent.injectPasswordFragment(this);
 
         //Type password
         loginWithPhoneNumberAndPassword();
@@ -141,108 +136,8 @@ public class PasswordFragment extends Fragment implements ILoginViewPassword {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
-    }
-
-    private void getPhoneNumberAndPasswordFromServer(String phoneNumber, String password) {
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage("Loading...");
-        progressDialog.show();
-
-        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        /*Create handle for the RetrofitInstance interface*/
-        JsonPlaceHolderApi service = RetrofitClientInstance.getRetrofitInstance().create(JsonPlaceHolderApi.class);
-
-        service.getLogin(phoneNumber, password)
-                .toObservable()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Response>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        Log.d(TAG, "onSubscribe");
-                        disposable = d;
-                    }
-
-                    @Override
-                    public void onNext(Response response) {
-                        Log.d(TAG, "Name: " + response);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        builder.setTitle("Error!");
-                        builder.setMessage("Wrong password, please try again");
-                        builder.setCancelable(false);
-                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                progressDialog.dismiss();
-                            }
-                        });
-                        AlertDialog alertDialog = builder.create();
-                        alertDialog.show();
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Intent intent = new Intent(getContext(), MainActivity.class);
-                        //Save phone number and switch to MainActivity
-                        Bundle bundle = new Bundle();
-                        bundle.putString(Constants.PASSWORD_EXTRA, mEditTextPassword.getText().toString());
-                        intent.putExtras(bundle);
-                        startActivity(intent);
-                        progressDialog.dismiss();
-                    }
-                });
-
-//        Call<Response> call = service.getLogin(phoneNumber, password);
-//        call.enqueue(new Callback<Response>() {
-//            @Override
-//            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-//
-//                if (response.isSuccessful()) {
-//                    Intent intent = new Intent(getContext(), MainActivity.class);
-//                    //Save phone number and switch to MainActivity
-//                    Bundle bundle = new Bundle();
-//                    bundle.putString(Constants.PASSWORD_EXTRA, mEditTextPassword.getText().toString());
-//                    intent.putExtras(bundle);
-//                    startActivity(intent);
-//                    progressDialog.dismiss();
-//                } else {
-//                    builder.setTitle("Error!");
-//                    builder.setMessage("Wrong password, please try again");
-//                    builder.setCancelable(false);
-//                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            progressDialog.dismiss();
-//                        }
-//                    });
-//                    AlertDialog alertDialog = builder.create();
-//                    alertDialog.show();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Response> call, Throwable t) {
-//                t.printStackTrace();
-//                progressDialog.dismiss();
-//                Toast.makeText(getContext(), "No Internet Connection. Please try again.", Toast.LENGTH_LONG).show();
-//            }
-//        });
     }
 
     private void loginWithPhoneNumberAndPassword() {
@@ -252,9 +147,9 @@ public class PasswordFragment extends Fragment implements ILoginViewPassword {
             @Override
             public void onClick(View v) {
                 if (mEditTextPassword.length() >= 6 && mEditTextPassword.length() <= 127) {
-                    getPhoneNumberAndPasswordFromServer(mPhoneNumber, mEditTextPassword.getText().toString());
+                    presenter.loadPassword(mPhoneNumber, mEditTextPassword.getText().toString());
                 } else {
-                    mLoginPresenter.onLoginPassword(mEditTextPassword.getText().toString());
+                    presenter.onLoginPassword(mEditTextPassword.getText().toString());
                 }
             }
         });
@@ -262,7 +157,7 @@ public class PasswordFragment extends Fragment implements ILoginViewPassword {
     }
 
     @Override
-    public void onLoginPasswordError(String message) {
+    public void showError(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         builder.setTitle("Error!");
@@ -279,9 +174,26 @@ public class PasswordFragment extends Fragment implements ILoginViewPassword {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        disposable.dispose();
+    public void showComplete() {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        //Save phone number and switch to MainActivity
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.PASSWORD_EXTRA, mEditTextPassword.getText().toString());
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
+
+    @Override
+    public void showProgress() {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+    }
+
+    @Override
+    public void hideProgress() {
+        progressDialog.dismiss();
+    }
+
 
 }
