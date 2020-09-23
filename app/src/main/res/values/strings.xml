@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name">NewGear</string>
+
+    //LoginScreen
+    <string name="txt_gear">Gear</string>
+    <string name="txt_country">Country</string>
+    <string name="txt_phone_number">Phone Number</string>
+    <string name="txt_login_with">Login with</string>
+    <string name="btn_type_password">Type password</string>
+    <string name="txt_version">v.0.90.0.b6065-staging-dev</string>
+    <string name="txt_terms_of_use">TERMS OF USE</string>
+
+    <string-array name="spinner_item_country">
+        <item>Vietnam</item>
+        <item>United States</item>
+        <item>Indian</item>
+    </string-array>
+
+    //PasswordScreen
+    <string name="txt_password">Password</string>
+    <string name="txt_content_forger_password">If you forget password, please contact the operator to update. After login, you can change password in user profile</string>
+
+    //Navigation Bar Menu
+    <string name="txt_timeline">Timeline</string>
+    <string name="txt_information">Information</string>
+    <string name="txt_chat">Chat</string>
+
+    //Timeline
+    <string name="txt_last_access_time">Last access time: </string>
+    <string name="txt_started">STARTED</string>
+    <string name="txt_started_title">(This is good time to do inspection)</string>
+    <string name="txt_VIN">VIN</string>
+    <string name="txt_loading">LOADING</string>
+    <string name="txt_unloading">UNLOADING</string>
+    <string name="txt_place">Place</string>
+    <string name="txt_on_hold">ON-HOLD</string>
+    <string name="txt_on_hold_and_new_title">(Please confirm if you accept this assignment)</string>
+    <string name="txt_loaded">LOADED</string>
+    <string name="txt_loaded_title">(Please wait for your partner to confirm your inspectation)</string>
+    <string name="txt_finished">FINISHED</string>
+    <string name="txt_finished_title">(Congrats! Your assignment is finished)</string>
+    <string name="txt_delivered">DELIVERED</string>
+    <string name="txt_delivered_title">(Now your task is finished, lets go to the next place)</string>
+    <string name="txt_confirmed">CONFIRMED</string>
+    <string name="txt_confirmed_title">(Tap on START when you are ready to go)</string>
+</resources>

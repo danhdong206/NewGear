@@ -1,0 +1,20 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="titleTextColor">@color/color_background</item>
+        <item name="subtitleTextColor">@color/color_background</item>
+    </style>
+
+    //Set text bold in navigation bar menu
+    <style name="Widget.NavigationView" parent="Widget.Design.NavigationView">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">14sp</item>
+        
+    </style>
+</resources>
