@@ -1,56 +1,48 @@
 package com.newgear.android.model.timeline;
 
 import com.google.gson.annotations.SerializedName;
-import com.newgear.android.MyDatabase;
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
-import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
 
-@Table(database = MyDatabase.class, name = "NewTaskGroup")
-public class NewTaskGroup extends BaseModel {
-    @PrimaryKey
-    @Column
+public class NewTaskGroup {
+
     @SerializedName("id")
     private int id;
-    @Column
+
     @SerializedName("reject_reason")
     private String rejectReason;
-    @Column
+
     @SerializedName("status")
     private String status;
-    @Column
+
     @SerializedName("updated_at_time_seconds")
     private int updatedAtTimeSeconds;
-    @Column
+
     @SerializedName("assignment_number")
     private String assignmentNumber;
-    @Column
+
     @SerializedName("sent_at_time_seconds")
     private int sentAtTimeSeconds;
-    @Column
+
     @SerializedName("confirmed_at_time_seconds")
     private int confirmedAtTimeSeconds;
-    @Column
+
     @SerializedName("started_at_time_seconds")
     private int startedAtTimeSeconds;
-    @Column
+
     @SerializedName("cargos_number")
     private int cargosNumber;
-    @Column
+
     @SerializedName("cancelled_cargos_number")
     private int cancelledCargosNumber;
-    @Column
+
     @SerializedName("is_delivered")
     private boolean isDelivered;
-    @Column
+
     @SerializedName("transportation_company_name")
     private String transportationCompanyName;
+
     @SerializedName("tasks_mini")
     private List<TasksMini> tasksMinis;
 
@@ -71,11 +63,6 @@ public class NewTaskGroup extends BaseModel {
         this.cancelledCargosNumber = cancelledCargosNumber;
         this.isDelivered = isDelivered;
         this.transportationCompanyName = transportationCompanyName;
-        this.tasksMinis = tasksMinis;
-    }
-
-    @Inject
-    public NewTaskGroup(List<TasksMini> tasksMinis) {
         this.tasksMinis = tasksMinis;
     }
 

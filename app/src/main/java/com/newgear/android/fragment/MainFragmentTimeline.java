@@ -3,27 +3,16 @@ package com.newgear.android.fragment;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.newgear.android.R;
 import com.newgear.android.adapter.StaggeredGridViewTimeLineAdapter;
-import com.newgear.android.model.timeline.Feed;
-import com.newgear.android.retrofit.JsonPlaceHolderApi;
-import com.newgear.android.retrofit.RetrofitClientInstance;
 
 import java.util.ArrayList;
 
 import javax.annotation.Nullable;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainFragmentTimeline extends Fragment {
 

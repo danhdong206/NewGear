@@ -1,48 +1,39 @@
 package com.newgear.android.model.timeline;
 
 import com.google.gson.annotations.SerializedName;
-import com.newgear.android.MyDatabase;
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
-import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
 
-@Table(database = MyDatabase.class, name = "TasksMini")
-public class TasksMini extends BaseModel {
-    @PrimaryKey
-    @Column
+public class TasksMini {
+
     @SerializedName("id")
     private int id;
-    @Column
+
     @SerializedName("sequence")
     private int sequence;
-    @Column
+
     @SerializedName("task_type")
     private String taskType;
-    @Column
+
     @SerializedName("updated_at_time_seconds")
     private int updatedAtTimeSeconds;
-    @Column
+
     @SerializedName("received_cargo_at_time_seconds")
     private int receivedCargoAtTimeSeconds;
-    @Column
+
     @SerializedName("inspection_group_status")
     private String inspectionGroupStatus;
-    @Column
+
     @SerializedName("inspection_group_type")
     private String inspectionGroupType;
-    @Column
+
     @SerializedName("location")
     private String location;
-    @Column
+
     @SerializedName("is_handler")
     private boolean isHandler;
-    @Column
+
     @SerializedName("task_status")
     private String taskStatus;
 
@@ -67,12 +58,6 @@ public class TasksMini extends BaseModel {
         this.location = location;
         this.isHandler = isHandler;
         this.taskStatus = taskStatus;
-        this.partnerRatings = partnerRatings;
-        this.driverInfos = driverInfos;
-    }
-
-    @Inject
-    public TasksMini(List<PartnerRating> partnerRatings, List<DriverInfo> driverInfos) {
         this.partnerRatings = partnerRatings;
         this.driverInfos = driverInfos;
     }

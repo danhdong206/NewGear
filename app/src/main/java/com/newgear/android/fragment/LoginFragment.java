@@ -1,6 +1,6 @@
 package com.newgear.android.fragment;
 
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -31,39 +30,29 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.newgear.android.R;
-import com.newgear.android.activity.PasswordScreenActivity;
-import com.newgear.android.presenter.ILoginPresenter;
-import com.newgear.android.presenter.LoginPresenter;
-import com.newgear.android.view.ILoginViewPhoneNumber;
-import com.newgear.android.retrofit.JsonPlaceHolderApi;
-import com.newgear.android.retrofit.RetrofitClientInstance;
+import com.newgear.android.activity.PasswordActivity;
+import com.newgear.android.di.component.ApplicationComponent;
+import com.newgear.android.di.component.MyApplication;
+import com.newgear.android.di.component.login.DaggerLoginFragmentComponent;
+import com.newgear.android.di.component.login.LoginFragmentComponent;
+import com.newgear.android.di.module.login.LoginFragmentMVPModule;
+import com.newgear.android.model.User;
+import com.newgear.android.mvp.login.LoginViewPresenter;
+import com.newgear.android.mvp.login.PresenterLoginImpl;
+import com.newgear.android.retrofit.APIInterface;
 import com.newgear.android.utils.Constants;
+
+import javax.inject.Inject;
 
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import retrofit2.Call;
-import retrofit2.Callback;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link LoginFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link LoginFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class LoginFragment extends Fragment implements ILoginViewPhoneNumber {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+
+public class LoginFragment extends Fragment implements LoginViewPresenter.View {
 
     private static final String TAG = LoginFragment.class.getSimpleName();
 
@@ -72,18 +61,18 @@ public class LoginFragment extends Fragment implements ILoginViewPhoneNumber {
     TextView mCodeCountry;
     Button mButtonTypePassword;
 
-    ILoginPresenter mLoginPresenter;
-
     ProgressDialog progressDialog;
 
-    private Disposable disposable;
+    LoginFragmentComponent loginFragmentComponent;
 
-    // TODO: Rename and change types of parameters
+    @Inject
+    PresenterLoginImpl presenter;
+
 
     private OnFragmentInteractionListener mListener;
 
     public LoginFragment() {
-        // Required empty public constructor
+
     }
 
     public static LoginFragment newInstance(int someInt, String someTitle) {
@@ -101,9 +90,7 @@ public class LoginFragment extends Fragment implements ILoginViewPhoneNumber {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_login, container, false);
     }
 
@@ -120,14 +107,21 @@ public class LoginFragment extends Fragment implements ILoginViewPhoneNumber {
 
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
 
-        mLoginPresenter = new LoginPresenter(this);
-
         //Spinner items country
         spinnerCountry();
-        //Login with type password
-        loginWithPhoneNumber();
         //Clickable TERMS OF USE
         termsOfUse();
+
+        ApplicationComponent applicationComponent = MyApplication.get(this).getApplicationComponent();
+        loginFragmentComponent = DaggerLoginFragmentComponent.builder()
+                .loginFragmentMVPModule(new LoginFragmentMVPModule(this))
+                .applicationComponent(applicationComponent)
+                .build();
+
+        loginFragmentComponent.injectLoginFragment(this);
+
+        //Login with type password
+        loginWithPhoneNumber();
     }
 
     @Override
@@ -147,18 +141,7 @@ public class LoginFragment extends Fragment implements ILoginViewPhoneNumber {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -168,6 +151,7 @@ public class LoginFragment extends Fragment implements ILoginViewPhoneNumber {
         adapter.setDropDownViewResource(R.layout.spinner_item_dropdown_country);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mCodeCountry = getActivity().findViewById(R.id.txt_code_country);
@@ -219,93 +203,6 @@ public class LoginFragment extends Fragment implements ILoginViewPhoneNumber {
 
     }
 
-    private void getPhoneNumberFromServer(String phoneNumber) {
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage("Loading...");
-        progressDialog.show();
-
-        /*Create handle for the RetrofitInstance interface*/
-        JsonPlaceHolderApi service = RetrofitClientInstance.getRetrofitInstance().create(JsonPlaceHolderApi.class);
-
-        service.getPhoneNumber(phoneNumber)
-                .toObservable()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Void>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        Log.d(TAG, "onSubscribe");
-                        disposable = d;
-                    }
-
-                    @Override
-                    public void onNext(Void aVoid) {
-                        Log.d(TAG, "Name: " + aVoid);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setTitle("Error!");
-                        builder.setMessage("Phone number not exist");
-                        builder.setCancelable(false);
-                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                progressDialog.dismiss();
-                            }
-                        });
-                        AlertDialog alertDialog = builder.create();
-                        alertDialog.show();
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Intent intent = new Intent(getContext(), PasswordScreenActivity.class);
-                        //Save phone number and switch to PasswordActivity
-                        Bundle bundle = new Bundle();
-                        bundle.putString(Constants.PHONE_NUMBER_EXTRA, mCodeCountry.getText().toString() + mEditTextPhoneNumber.getText().toString());
-                        intent.putExtras(bundle);
-                        startActivity(intent);
-                        progressDialog.dismiss();
-                    }
-                });
-
-//        Call call = service.getPhoneNumber(phoneNumber);
-//        call.enqueue(new Callback<Void>() {
-//            @Override
-//            public void onResponse(Call<Void> call, retrofit2.Response<Void> response) {
-//                if (response.isSuccessful()) {
-//                    Intent intent = new Intent(getContext(), PasswordScreenActivity.class);
-//                    //Save phone number and switch to PasswordActivity
-//                    Bundle bundle = new Bundle();
-//                    bundle.putString(Constants.PHONE_NUMBER_EXTRA, mCodeCountry.getText().toString() + mEditTextPhoneNumber.getText().toString());
-//                    intent.putExtras(bundle);
-//                    startActivity(intent);
-//                    progressDialog.dismiss();
-//                } else {
-//                    builder.setTitle("Error!");
-//                    builder.setMessage("Phone number not exist");
-//                    builder.setCancelable(false);
-//                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            progressDialog.dismiss();
-//                        }
-//                    });
-//                    AlertDialog alertDialog = builder.create();
-//                    alertDialog.show();
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Void> call, Throwable t) {
-//                progressDialog.dismiss();
-//                Toast.makeText(getContext(), "No Internet Connection. Please try again.", Toast.LENGTH_LONG).show();
-//            }
-//        });
-    }
-
     private void loginWithPhoneNumber() {
         mEditTextPhoneNumber = getActivity().findViewById(R.id.edit_text_phone_number);
         mButtonTypePassword = getActivity().findViewById(R.id.btn_type_password);
@@ -313,9 +210,9 @@ public class LoginFragment extends Fragment implements ILoginViewPhoneNumber {
             @Override
             public void onClick(View v) {
                 if (mEditTextPhoneNumber.length() >= 6 && mEditTextPhoneNumber.length() <= 12) {
-                    getPhoneNumberFromServer(mCodeCountry.getText().toString() + mEditTextPhoneNumber.getText().toString());
+                    presenter.loadPhoneNumber(mCodeCountry.getText().toString() + mEditTextPhoneNumber.getText().toString());
                 } else {
-                    mLoginPresenter.onLoginPhoneNumber(mEditTextPhoneNumber.getText().toString());
+                    presenter.onLoginPhoneNumber(mEditTextPhoneNumber.getText().toString());
                 }
             }
         });
@@ -323,7 +220,7 @@ public class LoginFragment extends Fragment implements ILoginViewPhoneNumber {
     }
 
     @Override
-    public void onLoginPhoneNumberError(String message) {
+    public void showError(String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         builder.setTitle("Error!");
@@ -340,8 +237,25 @@ public class LoginFragment extends Fragment implements ILoginViewPhoneNumber {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        disposable.dispose();
+    public void showComplete() {
+        Intent intent = new Intent(getContext(), PasswordActivity.class);
+        //Save phone number and switch to PasswordActivity
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.PHONE_NUMBER_EXTRA, mCodeCountry.getText().toString() + mEditTextPhoneNumber.getText().toString());
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
+
+    @Override
+    public void showProgress() {
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("Loading...");
+        progressDialog.show();
+    }
+
+    @Override
+    public void hideProgress() {
+        progressDialog.dismiss();
+    }
+
 }

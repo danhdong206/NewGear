@@ -14,10 +14,9 @@ import retrofit2.http.HeaderMap;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 
-public interface JsonPlaceHolderApi {
+public interface APIInterface {
     @POST("api/v1/public/auth_phone_number")
     @FormUrlEncoded
-//    Call<Void> getPhoneNumber(@Field("phone_number") String phoneNumber);
     Flowable<Void> getPhoneNumber(@Field("phone_number") String phoneNumber);
 
     @POST("api/v1/public/api_token")

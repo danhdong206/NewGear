@@ -7,4 +7,6 @@ public final class Constants {
     public static final String PREFERENCES = "Gear";
     public static final String KEY_LOGIN = "Login";
     public static final String KEY_PASSWORD = "Password";
+
+    public static final String BASE_URL = "https://gear-staging.symcresol.com/";
 }

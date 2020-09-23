@@ -1,38 +1,30 @@
 package com.newgear.android.model.timeline;
 
 import com.google.gson.annotations.SerializedName;
-import com.newgear.android.MyDatabase;
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
-import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import javax.inject.Inject;
 
-@Table(database = MyDatabase.class, name = "Feed")
-public class Feed extends BaseModel {
-    @PrimaryKey
-    @Column
+public class Feed {
+
     @SerializedName("id")
     private int id;
-    @Column
+
     @SerializedName("feed_type")
     private String feedType;
-    @Column
+
     @SerializedName("transportation_company_id")
     private int transportationCompanyID;
-    @Column
+
     @SerializedName("created_at_time_seconds")
     private int createdAtTimeSeconds;
-    @Column
+
     @SerializedName("updated_at_time_seconds")
     private int updatedAtTimeSeconds;
-    @Column
+
     @SerializedName("confirmed_at_time_seconds")
     private int confirmedAtTimeSeconds;
+
     @SerializedName("new_task_group")
     private List<NewTaskGroup> newTaskGroups;
 
@@ -47,11 +39,6 @@ public class Feed extends BaseModel {
         this.createdAtTimeSeconds = createdAtTimeSeconds;
         this.updatedAtTimeSeconds = updatedAtTimeSeconds;
         this.confirmedAtTimeSeconds = confirmedAtTimeSeconds;
-        this.newTaskGroups = newTaskGroups;
-    }
-
-    @Inject
-    public Feed(List<NewTaskGroup> newTaskGroups) {
         this.newTaskGroups = newTaskGroups;
     }
 

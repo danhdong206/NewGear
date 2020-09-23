@@ -1,49 +1,43 @@
 package com.newgear.android.model.timeline;
 
 import com.google.gson.annotations.SerializedName;
-import com.newgear.android.MyDatabase;
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
-import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 
-@Table(database = MyDatabase.class, name = "PartnerRating")
-public class PartnerRating extends BaseModel {
-    @Column
+
+public class PartnerRating {
+
     @SerializedName("inspection_group_id")
     private int inspectationGroupID;
-    @Column
+
     @SerializedName("finished_at_time_seconds")
     private int finishedAtTimeSeconds;
-    @Column
+
     @SerializedName("location_name")
     private String locationName;
-    @Column
+
     @SerializedName("task_type")
     private String taskType;
-    @Column
+
     @SerializedName("user_name")
     private String userName;
-    @Column
+
     @SerializedName("user_role")
     private String userRole;
-    @Column
+
     @SerializedName("user_image")
     private String userImage;
-    @PrimaryKey
-    @Column
+
     @SerializedName("id")
     private int id;
-    @Column
+
     @SerializedName("rating_score")
     private String ratingScore;
-    @Column
+
     @SerializedName("rating_comment")
     private String ratingComment;
-    @Column
+
     @SerializedName("skip_signature")
     private boolean skipSignature;
-    @Column
+
     @SerializedName("skip_inspection")
     private boolean skipInspection;
 

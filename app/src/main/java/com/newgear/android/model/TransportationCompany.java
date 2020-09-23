@@ -1,22 +1,21 @@
 package com.newgear.android.model;
 
 
-import com.newgear.android.MyDatabase;
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
-import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.BaseModel;
+import com.google.gson.annotations.SerializedName;
 
-@Table(database = MyDatabase.class, name = "TransportationCompany")
-public class TransportationCompany extends BaseModel {
-    @PrimaryKey
-    @Column
+
+public class TransportationCompany {
+
+    @SerializedName("id")
     private int id;
-    @Column
+
+    @SerializedName("name")
     private String name;
-    @Column
+
+    @SerializedName("latitude")
     private String latitude;
-    @Column
+
+    @SerializedName("longitude")
     private String longitude;
 
     public TransportationCompany() {

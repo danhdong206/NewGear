@@ -10,7 +10,7 @@ import com.newgear.android.R;
 import com.newgear.android.fragment.PasswordFragment;
 import com.newgear.android.utils.Constants;
 
-public class PasswordScreenActivity extends AppCompatActivity implements PasswordFragment.OnFragmentInteractionListener {
+public class PasswordActivity extends AppCompatActivity implements PasswordFragment.OnFragmentInteractionListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

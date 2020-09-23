@@ -1,54 +1,60 @@
-package com.newgear.android.model.user;
+package com.newgear.android.model;
 
 
 import android.text.TextUtils;
-import android.util.Patterns;
 
-import com.newgear.android.MyDatabase;
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
-import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.BaseModel;
+import com.google.gson.annotations.SerializedName;
+import com.newgear.android.mvp.login.LoginModel;
 
-import javax.inject.Inject;
 
-@Table(database = MyDatabase.class, name = "User")
-public class User extends BaseModel implements IUser {
-    @PrimaryKey
-    @Column
+public class User implements LoginModel {
+    @SerializedName("id")
     private int id;
-    @Column
-    private String name;
-    @Column
-    private String apiToken;
-    @Column
-    private String role;
-    @Column
-    private String subRole;
-    @Column
-    private String imageID;
-    @Column
-    private String tmsAPIToken;
-    @Column
-    private String firebaseToken;
-    @Column
-    private int gender;
-    @Column
-    private String locale;
-    @Column
-    private String image;
-    @Column
-    private String phoneNumber;
-    @Column
-    private String dateOfBirthday;
-    @Column
-    private String qualification;
-    @Column
-    private int workingInfo;
-    @Column
-    private int totalPoint;
 
-    private String password;
+    @SerializedName("name")
+    private String name;
+
+    @SerializedName("api_token")
+    private String apiToken;
+
+    @SerializedName("role")
+    private String role;
+
+    @SerializedName("sub_role")
+    private String subRole;
+
+    @SerializedName("image_id")
+    private String imageID;
+
+    @SerializedName("tms_api_token")
+    private String tmsAPIToken;
+
+    @SerializedName("firebase_token")
+    private String firebaseToken;
+
+    @SerializedName("gender")
+    private int gender;
+
+    @SerializedName("locale")
+    private String locale;
+
+    @SerializedName("image")
+    private String image;
+
+    @SerializedName("phone_number")
+    private String phoneNumber;
+
+    @SerializedName("date_of_birthday")
+    private String dateOfBirthday;
+
+    @SerializedName("qualification")
+    private String qualification;
+
+    @SerializedName("working_info")
+    private int workingInfo;
+
+    @SerializedName("total_point")
+    private int totalPoint;
 
     public User() {
 

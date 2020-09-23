@@ -9,7 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.newgear.android.R;
 import com.newgear.android.fragment.SplashFragment;
 
-public class SplashScreenActivity extends AppCompatActivity implements SplashFragment.OnFragmentInteractionListener {
+public class SplashActivity extends AppCompatActivity implements SplashFragment.OnFragmentInteractionListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

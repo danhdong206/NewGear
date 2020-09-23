@@ -1,28 +1,22 @@
 package com.newgear.android.model.timeline;
 
 import com.google.gson.annotations.SerializedName;
-import com.newgear.android.MyDatabase;
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
-import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.BaseModel;
 
-@Table(database = MyDatabase.class, name = "DriverInfo")
-public class DriverInfo extends BaseModel {
-    @Column
+
+public class DriverInfo {
+
     @SerializedName("trailer_number")
     private String trailerNumber;
-    @Column
+
     @SerializedName("user_name")
     private String userName;
-    @Column
+
     @SerializedName("user_role")
     private String userRole;
-    @Column
+
     @SerializedName("user_image")
     private String userImage;
-    @Column
-    @PrimaryKey
+
     @SerializedName("eta")
     private int eta;
 
