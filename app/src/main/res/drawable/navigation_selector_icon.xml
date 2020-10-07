@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/color_icon_tint_navigation_bar" android:state_checked="false" />
-    <item android:color="@color/color_background"/>
-</selector>

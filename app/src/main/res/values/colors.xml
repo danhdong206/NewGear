@@ -7,13 +7,4 @@
     <color name="color_background">#E24F5A</color>
     <color name="color_background_tint">#FFFFFF</color>
     <color name="color_text_terms_of_use">#F1ADB2</color>
-
-    <color name="color_icon_tint_navigation_bar">#727272</color>
-    <color name="color_text_title_navigation_bar">#393939</color>
-
-    <color name="color_text_last_access_time">#919191</color>
-    <color name="color_text_title_blue">#0288D1</color>
-    <color name="color_text_number_loading_place">#FF7F00</color>
-    <color name="color_text_number_unloading_place">#4CAF50</color>
-    <color name="color_view_line">#EAEAEA</color>
 </resources>
