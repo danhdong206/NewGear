@@ -10,6 +10,10 @@
     <string name="txt_version">v.0.90.0.b6065-staging-dev</string>
     <string name="txt_terms_of_use">TERMS OF USE</string>
 
+    <string name="txt_password">Password</string>
+
+    //PasswordScreen
+    <string name="txt_content_forger_password">If you forget password, please contact the operator to update. After login, you can change password in user profile</string>
     <string-array name="spinner_item_country">
         <item>Vietnam</item>
         <item>United States</item>
