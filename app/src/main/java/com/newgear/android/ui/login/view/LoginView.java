@@ -7,5 +7,5 @@ public interface LoginView {
 
     void showError(String message);
 
-    void showComplete(String message);
+    void showComplete();
 }

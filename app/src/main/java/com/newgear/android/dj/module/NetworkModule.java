@@ -6,6 +6,8 @@ import com.newgear.android.network.CustomRequestInterceptor;
 import com.newgear.android.network.RestService;
 import com.newgear.android.utils.Constants;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -15,11 +17,17 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 
 @Module
 public class NetworkModule {
+
+    public static final int CONNECT_TIMEOUT_SECOND = 60;
+    public static final int READ_TIMEOUT_SECOND = 60;
+    public static final int WRITE_TIMEOUT_SECOND = 60;
+
     @Provides
     @Singleton
     RestService provideRestService(Retrofit retrofit) {
@@ -37,9 +45,9 @@ public class NetworkModule {
         final ObjectMapper objectMapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
         return new Retrofit.Builder()
-                .baseUrl(Constants.BASE_URL)
+                .baseUrl(Constants.API_URL)
                 .client(createOkHttpClient(requestInterceptor, httpLoggingInterceptor))
-                .addConverterFactory(JacksonConverterFactory.create(objectMapper))
+                .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
     }
@@ -50,6 +58,9 @@ public class NetworkModule {
         return new OkHttpClient.Builder()
                 .addInterceptor(requestInterceptor)
                 .addInterceptor(httpLoggingInterceptor)
+                .connectTimeout(CONNECT_TIMEOUT_SECOND, TimeUnit.SECONDS)
+                .readTimeout(READ_TIMEOUT_SECOND, TimeUnit.SECONDS)
+                .writeTimeout(WRITE_TIMEOUT_SECOND, TimeUnit.SECONDS)
                 .build();
     }
 

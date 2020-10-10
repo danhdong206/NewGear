@@ -1,6 +1,7 @@
 package com.newgear.android.ui;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 import android.support.v4.app.Fragment;
 
@@ -30,4 +31,11 @@ public abstract class GearFragment extends Fragment implements HasSupportFragmen
         super.onAttach(activity);
     }
 
+    @Override
+    public void onAttach(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            AndroidSupportInjection.inject(this);
+        }
+        super.onAttach(context);
+    }
 }

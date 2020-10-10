@@ -32,6 +32,10 @@ import android.widget.TextView;
 import com.newgear.android.R;
 import com.newgear.android.ui.GearFragment;
 import com.newgear.android.ui.login.presenter.LoginPresenter;
+import com.newgear.android.ui.password.PasswordActivity;
+import com.newgear.android.utils.Constants;
+
+import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil;
 
 import javax.inject.Inject;
 
@@ -175,14 +179,13 @@ public class LoginFragment extends GearFragment implements LoginView {
     private void loginWithPhoneNumber() {
         mEditTextPhoneNumber = getActivity().findViewById(R.id.edit_text_phone_number);
         mButtonTypePassword = getActivity().findViewById(R.id.btn_type_password);
-        mButtonTypePassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mEditTextPhoneNumber.length() >= 6 && mEditTextPhoneNumber.length() <= 12) {
-                    mLoginPresenter.loadPhoneNumber(mCodeCountry.getText().toString() + mEditTextPhoneNumber.getText().toString());
-                } else {
-                    mLoginPresenter.onLoginPhoneNumber(mEditTextPhoneNumber.getText().toString());
-                }
+        mButtonTypePassword.setOnClickListener(v -> {
+            if (mEditTextPhoneNumber.length() >= 6 && mEditTextPhoneNumber.length() <= 12) {
+                mLoginPresenter.loadPhoneNumber(mCodeCountry.getText().toString() + mEditTextPhoneNumber.getText().toString());
+                UIUtil.hideKeyboard(getActivity());
+            } else {
+                mLoginPresenter.onLoginPhoneNumber(mEditTextPhoneNumber.getText().toString());
+                UIUtil.hideKeyboard(getActivity());
             }
         });
     }
@@ -194,37 +197,21 @@ public class LoginFragment extends GearFragment implements LoginView {
         builder.setTitle("Error!");
         builder.setMessage(message);
         builder.setCancelable(false);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        builder.setPositiveButton("OK", (dialog, which) -> {
 
-            }
         });
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
 
     @Override
-    public void showComplete(String message) {
-//        Intent intent = new Intent(getContext(), PasswordActivity.class);
-//        //Save phone number and switch to PasswordActivity
-//        Bundle bundle = new Bundle();
-//        bundle.putString(Constants.PHONE_NUMBER_EXTRA, mCodeCountry.getText().toString() + mEditTextPhoneNumber.getText().toString());
-//        intent.putExtras(bundle);
-//        startActivity(intent);
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
-        builder.setTitle("Success");
-        builder.setMessage(message);
-        builder.setCancelable(false);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
+    public void showComplete() {
+        Intent intent = new Intent(getContext(), PasswordActivity.class);
+        //Save phone number and switch to PasswordActivity
+        Bundle bundle = new Bundle();
+        bundle.putString(Constants.PHONE_NUMBER_EXTRA, mCodeCountry.getText().toString() + mEditTextPhoneNumber.getText().toString());
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     @Override

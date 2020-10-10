@@ -51,7 +51,7 @@ public class LoginPresenterImpl implements LoginPresenter {
 
                     @Override
                     public void onComplete() {
-                        mLoginView.showComplete("Login Successfully");
+                        mLoginView.showComplete();
                         disposable.dispose();
                         mLoginView.hideProgress();
                     }
